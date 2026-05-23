@@ -1,71 +1,52 @@
-🛠️ Instalación y Despliegue Local
-Clonar el repositorio e instalar dependencias:
+# ⚔️ Next.js Multi-Laboratorio: Colisión Interdimensional
 
-Bash
-npm install
-Ejecutar el entorno de desarrollo:
-## next-ssg-isr-app
-
-Aplicación de ejemplo construida con Next.js + TypeScript que demuestra patrones de renderizado: SSG (Static Site Generation), ISR (Incremental Static Regeneration) y CSR (Client-Side Rendering).
-
-## Resumen
-
-- Rutas de ejemplo: `/rickandmorty` y `/pokemon`.
-- Uso de SSG para páginas que pueden generarse en build time.
-- ISR en páginas individuales con revalidación periódica.
-- Búsqueda y filtros implementados con CSR para mejor UX.
-
-## Requisitos
-
-- Node.js 18+ (recomendado)
-- npm (o yarn/pnpm)
-
-## Instalación
-
-1. Clona el repositorio:
-
-	git clone <repo-url>
-	cd next-ssg-isr-app
-
-2. Instala dependencias:
-
-	npm install
-
-## Scripts disponibles
-
-- `npm run dev` — Levanta el servidor de desarrollo en `http://localhost:3000`.
-- `npm run build` — Compila la aplicación para producción. Este paso ejecuta el tipado TypeScript y genera los assets estáticos (SSG). También resuelve `generateStaticParams()` para prerenderizar las rutas configuradas.
-- `npm run start` — Inicia el servidor de producción optimizado (usa los artefactos generados por `build`).
-
-## Notas sobre renderizado
-
-- SSG (Static Site Generation): usado en la página principal de `/rickandmorty` para contenido que no cambia con frecuencia. Mejora el rendimiento y FCP.
-- ISR (Incremental Static Regeneration): aplicado en rutas dinámicas como `/rickandmorty/[id]` con revalidación periódica para actualizar páginas sin desplegar.
-- CSR (Client-Side Rendering): usado en componentes de búsqueda y filtrado para una experiencia interactiva sin recargas completas.
-
-## Estructura relevante del proyecto
-
-- `app/` — Rutas y componentes de la aplicación (Next 13 app router).
-- `public/` — Archivos estáticos.
-- `types/` — Tipados TypeScript para entidades (p. ej. Pokemon, Rick & Morty).
-
-## Despliegue
-
-Se puede desplegar en Vercel, Netlify u otro proveedor compatible con Next.js. En Vercel normalmente basta con conectar el repositorio y usar los comandos por defecto de build (`npm run build`).
-
-## Buenas prácticas y recomendaciones
-
-- Mantener variables sensibles fuera del repositorio (`.env.local`).
-- Revisar los tiempos de revalidación ISR para equilibrar frescura y coste de render.
-
-## Contribuciones
-
-Si quieres colaborar, abre un issue o envía un pull request con cambios pequeños y documentados.
-
-## Licencia
-
-Proyecto para fines educativos. Añade una licencia si piensas publicar o compartir públicamente.
+Aplicación web premium construida con **Next.js (App Router)**, **TypeScript** y **Tailwind CSS**. Este proyecto funciona como un ecosistema multi-laboratorio donde colisionan los universos de **Pokémon** y **Rick & Morty**, implementando de forma agresiva estrategias de renderizado avanzadas en el servidor y el cliente.
 
 ---
 
-Si quieres que adapte el README a inglés, añada badges (CI, cobertura) o incluya instrucciones de despliegue en Vercel/Docker, dime cuál prefieres y lo hago.
+## 🚀 Arquitectura y Estrategias de Renderizado
+
+### 1. El Nexo Central (`/`)
+La página de inicio (`app/page.tsx`) fue diseñada con una estética cinematográfica de "conflicto épico". Funciona como un hub interactivo que divide visualmente ambos mundos mediante degradados animados, efectos de *glassmorphism* y bordes de neón reactivos.
+
+### 2. Laboratorio Pokémon (`/pokemon`)
+* **Paginación Avanzada:** El catálogo de criaturas se divide en pestañas dinámicas (de 48 en 48) para optimizar la transferencia de datos.
+* **Estrategia ISR:** Los datos se pre-renderizan en el servidor y se revalidan en segundo plano cada 24 horas (`revalidate: 86400`), garantizando una velocidad de carga máxima sin perder frescura.
+
+### 3. Tarea Rick and Morty (`/rickandmorty`)
+* **Página Principal (SSG):** Petición inicial forzada en caché (`cache: 'force-cache'`), generando un documento estático ultra rápido durante la compilación para un FCP óptimo.
+* **Búsqueda Interactiva (CSR):** Filtros en tiempo real (*Name, Status, Gender, Type*) procesados en el cliente usando `useState` y `useEffect` con un mecanismo de *debounce* para mitigar la saturación de la API.
+* **Detalle de Personajes (ISR & `generateStaticParams`):** Mapeo exhaustivo del response (`/[id]`) con rutas estáticas pre-construidas en el build y una **revalidación estática de 10 días** (`revalidate: 864000`).
+* **Lazy Loading:** Optimización nativa de imágenes externas mediante carga bajo demanda.
+
+---
+
+## 📁 Estructura del Proyecto
+
+```text
+NEXT-SSG-ISR-APP/
+├── app/
+│   ├── error.tsx                # Manejador global de fallos críticos (Error Boundary)
+│   ├── layout.tsx               # Estructura base HTML5 y fuentes globales
+│   ├── not-found.tsx            # Captura global de rutas 404 erróneas
+│   ├── page.tsx                 # Hub de colisión interdimensional (Landing Page)
+│   │
+│   ├── pokemon/                 # MÓDULO 1: LABORATORIO POKÉMON (ISR)
+│   │   ├── [name]/
+│   │   │   └── page.tsx         # Ficha técnica individual y metadata dinámica
+│   │   ├── not-found.tsx        # 404 temático de Pokémon
+│   │   └── page.tsx             # Catálogo paginado de Pokémon
+│   │
+│   └── rickandmorty/            # MÓDULO 2: TAREA RICK AND MORTY (SSG/ISR/CSR)
+│       ├── [id]/
+│       │   └── page.tsx         # Ficha técnica interdimensional (ISR 10 días)
+│       ├── character-search.tsx # Grid interactivo y controladores de filtrado (CSR)
+│       ├── not-found.tsx        # 404 temático de la Ciudadela de Ricks
+│       └── page.tsx             # Vista base del módulo de Rick & Morty (SSG)
+│
+├── types/
+│   ├── pokemon.ts               # Tipado estricto para las respuestas de la PokéAPI
+│   └── rickmorty.ts             # Modelos de datos para la API de Rick & Morty
+│
+├── next.config.ts               # Configuración de políticas de optimización de imágenes
+└── tailwind.config.ts           # Configuración de estilos y paleta de colores extendida
